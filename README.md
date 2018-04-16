@@ -1,6 +1,6 @@
 # loldb - lua objects leveldb
 
-this sippet persists lua tables as json string to leveldb.
+this code snippet persists lua tables as json string to leveldb.
 
 ## requirements
 
