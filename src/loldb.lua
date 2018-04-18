@@ -8,22 +8,25 @@ function loldb.open(file)
   opt.createIfMissing = true
   opt.errorIfExists = false
 
-  local _loldb = {}
-  _loldb.db = leveldb.open(opt, file)
+  local _loldb = {
+    db = leveldb.open(opt, file),
+    close = function(self) leveldb.close(self.db) end
+  }
 
-  _loldb.insert = function(self, key, data)
-    local d = cjson.encode(data)
-    self.db:put(key, d)
-  end
-
-  _loldb.select = function(self, key)
-    local d = self.db:get(key)
-    return cjson.decode(d)
-  end
-
-  _loldb.close = function(self)
-    leveldb.close(self.db)
-  end
+  _loldb = setmetatable(_loldb, {
+    __index = function(t, k)
+      if t.db:has(k) then
+        return cjson.decode(t.db:get(k))
+      end
+      return nil
+    end,
+    __newindex = function(t, k, v)
+      t.db:put(k, cjson.encode(v))
+    end,
+    __gc = function(t)
+      t:close()
+    end
+  })
 
   return _loldb
 end

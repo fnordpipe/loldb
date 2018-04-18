@@ -12,6 +12,12 @@ this code snippet persists lua tables as json string to leveldb.
     local loldb = require('loldb')
     local db = loldb.open('/tmp/my.lvldb')
 
-    db:insert('foo', { foo = 'bla', rofl = { mao = true } })
-    db:select('foo')
+    db.foo = {
+      bla = 'bla',
+      rofl = {
+        mao = true
+      }
+    }
+
+    local foo = db.foo
     db:close()
